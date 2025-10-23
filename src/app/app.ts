@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { AppService } from './app.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient, HttpHandler } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -18,33 +18,64 @@ import { HttpClient, HttpHandler } from '@angular/common/http';
     HttpClient
   ]
 })
-export class App implements OnInit {
+export class App {
   protected title = 'angular-recoknition';
-  imageSrc: string = '';
 
   constructor(private appService: AppService) { }
 
-   ngOnInit(): void {
-  }
-
-   myForm = new FormGroup({
+  imageUrl: string | ArrayBuffer | null = null;
+  imageName: string | null = null;
+  isDragOver: boolean = false;
+    myForm = new FormGroup({
     file: new FormControl('', [Validators.required]),
     fileSource: new FormControl('', [Validators.required])
-
   });
 
-  onFileChange(event:any) {
-    const reader = new FileReader();
-    if(event.target.files && event.target.files.length) {
-      const [file] = event.target.files;
-      reader.readAsDataURL(file);
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.length) {
+      this.processFile(input.files[0]);
+    }
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+    if (event.dataTransfer?.files?.length) {
+      this.processFile(event.dataTransfer.files[0]);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  processFile(file: File): void {
+    if (file.type.startsWith('image/')) {
+      this.imageName = file.name;
+      const reader = new FileReader();
       reader.onload = () => {
-        this.imageSrc = reader.result as string;
-        this.myForm.patchValue({
+        this.imageUrl = reader.result;
+         this.myForm.patchValue({
           fileSource: reader.result as string
         });
       };
+      reader.readAsDataURL(file);
     }
+  }
+
+  clearImage(): void {
+    this.imageUrl = null;
+    this.imageName = null;
   }
 
   submit(){

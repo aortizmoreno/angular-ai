@@ -1,17 +1,45 @@
-<h1 style="color: blue;">Angular Image Upload</h1>
 <form [formGroup]="myForm" (ngSubmit)="submit()">
-    <div class="form-group">
-        <label for="file">File:</label>
-        <input
-            formControlName="file"
-            id="file"
-            type="file"
-            class="form-control"
-            (change)="onFileChange($event)">
+  <div class="upload-title">
+    <span class="upload-title-icon">
+      <div class="rekognition-logo-preview">
+          <img src="/assets/images/amazonRekognition.png"
+            alt="AWS Rekognition Logo"
+            width="96"
+            height="96"
+            style="background:#fff; border-radius:20px; border:3px solid #ffa41b; box-shadow:0 0 9px #ffe6c3;"/>
+      </div>
+    </span>
+    <span class="upload-title-text">AI Image Rekognition</span>
+  </div>
+
+  <div class="upload-card">
+    <div
+      class="drag-drop-zone"
+      [class.dragover]="isDragOver"
+      (drop)="onDrop($event)"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (dragend)="onDragLeave($event)"
+    >
+      <label class="custom-file-upload">
+        <input type="file" (change)="onImageSelected($event)" accept="image/*" formControlName="file"/>
+        <span>Click or Drag an Image Here</span>
+      </label>
     </div>
+    <div class="preview-section" [hidden]="!imageUrl">
+      <img [src]="imageUrl ?? ''" [alt]="imageName ?? ''" class="preview-image" />
+      <span class="image-name"></span>
+      <button class="clear-btn" (click)="clearImage()">Clear</button>
+      <button class="submit-btn" [disabled]="myForm.invalid" type="submit">Analyze Image</button>
+    </div>
+  </div>
 
-    <img [src]="imageSrc">
-    <button class="btn btn-primary" [disabled]="myForm.invalid" type="submit">Submit</button>
+  <!-- Pretty labels below the card -->
+  <div class="labels-row">
+    <span class="pretty-label ">Image Upload</span>
+    <span class="pretty-label ">Drag & Drop</span>
+    <span class="pretty-label ">Preview Enabled</span>
+    <span class="pretty-label ">Angular 20 Ready</span>
+  </div>
 </form>
-
 <router-outlet />

@@ -29,17 +29,36 @@
     <div class="preview-section" [hidden]="!imageUrl">
       <img [src]="imageUrl ?? ''" [alt]="imageName ?? ''" class="preview-image" />
       <span class="image-name"></span>
-      <button class="clear-btn" (click)="clearImage()">Clear</button>
+      <button class="clear-btn" type="button" (click)="clearImage()" >Clear</button>
       <button class="submit-btn" [disabled]="myForm.invalid" type="submit">Analyze Image</button>
     </div>
   </div>
 
-  <!-- Pretty labels below the card -->
-  <div class="labels-row">
-    <span class="pretty-label ">Image Upload</span>
-    <span class="pretty-label ">Drag & Drop</span>
-    <span class="pretty-label ">Preview Enabled</span>
-    <span class="pretty-label ">Angular 20 Ready</span>
-  </div>
+  @if (isLoading) {
+    <div class="loading" >
+      <mat-progress-spinner
+          class="spinner"
+          mode="indeterminate"
+          diameter="70">
+      </mat-progress-spinner>
+    </div>
+  }
+
+  @if (response) {
+    <div class="ai-description">
+      <strong>AI Generated Description:</strong><br>
+      Artificial Intelligence (AI) refers to computer systems and software designed to perform tasks that typically require human intelligence, such as analyzing images, understanding speech, making decisions, or recognizing patterns. AI helps automate complex processes and improve accuracy in areas like image recognition, language translation, and predictive analytics.
+    </div>
+
+    <!-- Pretty labels below the card -->
+    <div class="ai-description">
+      <strong>Labels Detected:</strong><br>
+      <div class="labels-row">
+      @for (label of response!.labels; track label) {
+        <span class="pretty-label ">{{label}}</span>
+      }
+      </div>
+    </div>
+  }
 </form>
 <router-outlet />
